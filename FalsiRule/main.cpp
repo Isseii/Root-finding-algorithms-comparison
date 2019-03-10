@@ -1,49 +1,35 @@
 #include <iostream>
 
-double example_fun(double x) {
-	return 50 * x * x * x + 5;
-}
+#include "Configuration.h"
+#include "Functions.h"
+#include "Condition.h"
+#include "rootfinder.h"
 
-double fun_quad(double x) {
-	return x * x * x * x - 5;
-}
+double a, b, epsilon, fa, fb, fo;
+int iter, i, fun_i, con_i;
+double(*fun)(double);
+Condition * warunek;
 
-auto aproximation(int i, int c, double e, double f) -> bool { f > e; }
-
-auto iteration(int i, int c, double e, double f) -> bool { i <= c; }
 
 int main() {
-	// conf
-	double epsilon = 0.00001;
-	double a = -1;
-	double b = 3;
-	int iter = 16;
-	int i = 0;
-	bool op = false;
-	// wsk
-	double(*fun)(double) = fun_quad;
-	bool(*condition)(int, int, double, double) = aproximation;
-	double fa, fb, fo, xa = a, xb = b;
-	fa = fun(a); fb = fun(b);
+	fun_i = conf::fun_selection();
+	fun = custom::fun::functions[fun_i - 1];
 
-	if (fa*fb > 0) return 1;
+	std::tie(a, b) = conf::specify_range(fun);
 
-	do {
-		xa = xb;
-		xb = a - fa*((b - a) / (fb - fa));
-		fo = fun(xb);
+	con_i = conf::specify_condition();
+	switch (con_i) {
+	case 1: warunek = new Epsilon(fo, epsilon); break;
+	case 2: warunek = new Iteration(i, iter); break;
+	}
+	
 
-		if (fo*fa < 0) {
-			b = xb; fb = fo;
-		}
-		else {
-			a = xb; fa = fo;
-		}
-		i++;
-	} while (condition(i, iter, epsilon, abs(fo)));
-		
-	std::cout << xb << std::endl;
+	using namespace std;
+	auto result = root::finder::falsi(fun, a, b, warunek, i, fo);
+	cout << "Metoda: " << result.method << endl;
+	cout << "Iteracje: " << result.iterations << endl;
+	cout << "Wynik: " << result.value << endl;
+
 	system("pause");
 	return 0;
-
 }
