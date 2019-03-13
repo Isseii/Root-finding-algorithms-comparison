@@ -3,25 +3,23 @@
 
 class Condition {
 public:
-	virtual bool check();
+	virtual bool check(void *addr) = 0;
 };
 
 class Epsilon : public Condition
 {
 public:
-	Epsilon(double &f, double &e);
+	Epsilon(double &e);
 	double * epsilon;
-	double * fo;
-	virtual bool check();
+	virtual bool check(void* addr);
 };
 
 class Iteration : public Condition
 {
 public:
-	Iteration(int &i, int &m);
-	int * counter;
+	Iteration(int &m);
 	int * max;
-	virtual bool check();
+	virtual bool check(void *addr);
 };
 
 #endif // !_CONDITION_H_

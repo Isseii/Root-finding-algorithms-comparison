@@ -15,8 +15,7 @@ namespace root {
 			double range_a;
 			double range_b;
 		};
-
-		RootResult falsi(double(*fun)(double), double a, double b, Condition *warunek, int &i, double &fo);
+		RootResult falsi(double(*fun)(double), double a, double b, Condition *warunek, int con, void(*callback)(RootResult));
 
 		RootResult bisection();
 	}

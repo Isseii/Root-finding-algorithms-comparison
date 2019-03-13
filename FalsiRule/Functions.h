@@ -14,7 +14,7 @@ namespace custom {
 	namespace fun {
 
 		using namespace funs;
-		// x^2 - 5
+		// x^2 - 4
 		double fun1(double x);
 		// x^4 -x^3 - 50 + x^2
 		double fun2(double x);

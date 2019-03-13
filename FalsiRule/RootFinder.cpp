@@ -1,58 +1,21 @@
-#include "rootfinder.h"
+#include "RootFinder.h"
+#include <iostream>
+#include <chrono>
+#include <thread>
 
 using namespace root::finder;
 
-//RootResult falsi() {
-//	return;
-//}
-
-// conf
-	//double epsilon = 0.00001;
-	//double a = -1;
-	//double b = 3;
-	//int iter = 16;
-	//int i = 0;
-	//bool op = false;
-	//// wsk
-	//double(*fun)(double) = fun_quad;
-	//bool(*condition)(int, int, double, double) = aproximation;
-	//double fa, fb, fo, xa = a, xb = b;
-	//fa = fun(a); fb = fun(b);
-
-	//if (fa*fb > 0) return 1;
-
-	//do {
-	//	xa = xb;
-	//	xb = a - fa*((b - a) / (fb - fa));
-	//	fo = fun(xb);
-
-	//	if (fo*fa < 0) {
-	//		b = xb; fb = fo;
-	//	}
-	//	else {
-	//		a = xb; fa = fo;
-	//	}
-	//	i++;
-	//} while (condition(i, iter, epsilon, abs(fo)));
-	//	
-	//std::cout << xb << std::endl;
-
-
-double example_fun(double x) {
-	return 50 * x * x * x + 5;
-}
-
-double fun_quad(double x) {
-	return x * x * x * x - 5;
-}
-
-auto aproximation(int i, int c, double e, double f) { return f > e; }
-
-auto iteration(int i, int c, double e, double f) { return i <= c; }
-
-RootResult root::finder::falsi(double(*fun)(double), double a, double b, Condition *warunek, int &i, double &fo)
+RootResult root::finder::falsi(double(*fun)(double), double a, double b, Condition *warunek, int con, void(*callback)(RootResult))
 {
-	double fa= fun(a), fb=fun(b), xa = a, xb =b;
+	std::cout << "falsi started..." << std::endl;
+	double fa = fun(a), fb = fun(b), xa = a, xb = b, fo;
+	int i = 0;
+	void* var = nullptr;
+	switch (con)
+	{
+	case 1: var = &fo; break;
+	case 2: var = &i;  break;
+	}
 	RootResult result;
 	result.method = "FALSI";
 	result.range_a = a;
@@ -62,6 +25,9 @@ RootResult root::finder::falsi(double(*fun)(double), double a, double b, Conditi
 		xb = a - fa * ((b - a) / (fb - fa));
 		fo = fun(xb);
 
+		if (fo == std::numeric_limits<double>::infinity()) {
+			std::cout << "The hell ?" << std::endl;
+		}
 		if (fo*fa < 0) {
 			b = xb; fb = fo;
 		}
@@ -69,9 +35,9 @@ RootResult root::finder::falsi(double(*fun)(double), double a, double b, Conditi
 			a = xb; fa = fo;
 		}
 		i++;
-	} while (warunek->check());
+	} while (warunek->check(var) && fo != 0);
 	result.iterations = i;
 	result.value = xb;
-
+	callback(result);
 	return result;
 }

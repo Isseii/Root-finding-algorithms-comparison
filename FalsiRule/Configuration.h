@@ -1,7 +1,6 @@
 #ifndef _CONFIGURATION_H_
 #define _CONFIGURATION_H_
 #include <tuple>
-#include "protofun.h"
 
 namespace conf {
 	// wybieranie funkcji

@@ -1,7 +1,12 @@
 #include "Configuration.h"
 #include <iostream>
-#include <conio.h>
 #include <string>
+
+//kod specificzny dla platformy windows
+#ifdef _WIN32
+#include <conio.h>
+#endif // _WIN32
+
 
 using namespace conf;
 using namespace std;
@@ -11,34 +16,40 @@ int conf::fun_selection()
 {
 	cout << "Wskaz funkcje" << endl;
 
-	char selection; // zmienna do której wprowadzamy wybór
-	int option = 0; // `x` bedzie zawiera³ liczbê [1,4] odpowiadajac¹ danej funkcji
+	char selection; // zmienna do ktÃ³rej wprowadzamy wybÃ³r
+	int option = 0; // `x` bedzie zawieraÄ‡ liczba [1,4] odpowiadajacÄ… danej funkcji
 
 	while (!option) {
+
+
+		#ifdef _WIN32
 		selection = _getch(); // alternatywa dla ` cin >> `
+		#else
+		selection = cin.get();
+		#endif // WIND32
+		
 		option = extractSelection(selection, 4);
 	}
 
 	cout << "Wybor: " << selection << endl;
 
-	return option;
+	return option - 1;
 }
 
 // okreslanie zakresu poszukiwan
 tuple<double, double> conf::specify_range(double (*fun)(double))
 {
-	cout << "Podaj zakres poszukiwan ( w formacie [a,b] ! )" << endl;
+	cout << "Podaj zakres poszukiwan ( w formacie [a,b] ! ) : ";
 	double x = 1, y = 1;
 	string temp;
 	do {
-		getline(cin, temp);
-		if (sscanf_s(temp.c_str(), "[%lf,%lf]", &x, &y) < 2) {
+		cin >> temp;
+		if (sscanf(temp.c_str(), "[%lf,%lf]", &x, &y) < 2) {
 			cout << "Nieprawidlowe dane" << endl;
 			x = y = 1;
-			continue;
 		}
-
-		cout << ((x * y) > 0 ? "Warunek ` a * b < 0 ` nie zostal spelniony" : "") << endl;
+		else
+			cout << ((fun(x) * fun(y)) > 0 ? "Warunek ` a * b < 0 ` nie zostal spelniony \n" : "");
 
 	} while (fun(x)*fun(y) > 0);
 
@@ -57,7 +68,12 @@ int conf::specify_condition()
 	char selection;
 
 	while (!conSelect) {
-		selection = _getch();
+
+		#ifdef _WIN32
+		selection = _getch(); // alternatywa dla ` cin >> `
+		#else
+		selection = cin.get();
+		#endif // WIND32
 		conSelect = extractSelection(selection, 2);
 	}
 
